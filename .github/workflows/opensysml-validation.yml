@@ -39,11 +39,11 @@ jobs:
           mkdir -p "$install_dir"
           cd "$install_dir"
           curl --fail --location --retry 3 \
-            --output sysml-linux-amd64.tar.gz \
-            https://github.com/Open-MBEE/OpenSysML/releases/download/v0.12.1/sysml-linux-amd64.tar.gz
-          echo '775260218ada7ebfbe7a6daa2e3ef21637bc1dbc66c530253a30a0f544e61952  sysml-linux-amd64.tar.gz' \
+            --output opensysml-linux-amd64.tar.gz \
+            https://github.com/Open-MBEE/OpenSysML/releases/download/v0.12.1/opensysml-linux-amd64.tar.gz
+          echo 'a091d9a110c4757357b093f2103f5a0fd04c5369490eda75b74cae8c466b5b5f  opensysml-linux-amd64.tar.gz' \
             | sha256sum --check -
-          tar -xzf sysml-linux-amd64.tar.gz
+          tar -xzf opensysml-linux-amd64.tar.gz
           binary="$(find "$install_dir" -type f -name sysml -print -quit)"
           test -n "$binary"
           chmod +x "$binary"
