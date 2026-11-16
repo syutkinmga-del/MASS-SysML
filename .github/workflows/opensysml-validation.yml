@@ -1,0 +1,56 @@
+name: OpenSysML validation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checksum:
+    name: Baseline checksum
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify baseline checksum
+        run: sha256sum --check MASSKernel_v1.0.sha256
+
+  validate:
+    name: Validate ${{ matrix.model }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        model:
+          - MASSKernel_v1.0.sysml
+          - MASSKernel_v1.0_candidate.sysml
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install OpenSysML v0.12.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          install_dir="$RUNNER_TEMP/opensysml"
+          mkdir -p "$install_dir"
+          cd "$install_dir"
+          curl --fail --location --retry 3 \
+            --output opensysml-linux-amd64.tar.gz \
+            https://github.com/Open-MBEE/OpenSysML/releases/download/v0.12.1/opensysml-linux-amd64.tar.gz
+          echo 'a091d9a110c4757357b093f2103f5a0fd04c5369490eda75b74cae8c466b5b5f  opensysml-linux-amd64.tar.gz' \
+            | sha256sum --check -
+          tar -xzf opensysml-linux-amd64.tar.gz
+          binary="$(find "$install_dir" -type f -name sysml -print -quit)"
+          test -n "$binary"
+          chmod +x "$binary"
+          echo "$(dirname "$binary")" >> "$GITHUB_PATH"
+          "$binary" -version
+
+      - name: Analyse model
+        env:
+          MODEL_FILE: ${{ matrix.model }}
+        run: sysml -validate "$MODEL_FILE"
