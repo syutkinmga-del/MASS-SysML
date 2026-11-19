@@ -67,7 +67,7 @@ Kernel startup emitted log4j configuration warnings (`No appenders could be foun
 `Please initialize the log4j system properly`, and the log4j FAQ notice). These are kernel process
 startup warnings, separate from the model's IOPub output; they are not reported as model diagnostics.
 
-## Fixed official release configured for CI — result pending
+## Fixed official release CI result (2026-11-19)
 
 The separate workflow `.github/workflows/pilot-validation.yml` is configured to check the official
 **2026-07 / Jupyter kernel 0.61.0** release from the
@@ -87,11 +87,19 @@ The release tag resolves to commit
   `traitlets==5.16.1`, `tornado==6.5.8`, `platformdirs==4.11.7`,
   `python-dateutil==2.9.0.post0`, and `six==1.17.0`.
 
-The workflow verifies both the archive digest and extracted JAR digest, installs the kernel only in
-the CI Python prefix, then runs `python scripts/check_pilot.py --kernel sysml`. It has a job timeout
-and uploads its validation log with `if: always()`. The official-release workflow has **not yet run**;
-compatibility with the release must not be reported as successful until its actual CI result is
-available.
+The [first pull-request workflow run](https://github.com/syutkinmga-del/MASS-SysML/actions/runs/44572418724)
+completed successfully on 2026-11-19. It verified the ZIP and extracted JAR SHA-256 values above,
+installed the kernel in the CI Python prefix, and ran
+`python scripts/check_pilot.py --kernel sysml`.
+
+The smoke probe, baseline, and candidate each returned the expected `Package ... (<UUID>)` result,
+`execute_reply` status `ok`, IOPub `idle`, zero IOPub errors, and confirmed kernel shutdown. The
+checker classified all three as `PASS`; it found no model diagnostic text. The validation-log
+artifact was uploaded successfully.
+
+The Jupyter kernel emitted log4j startup warnings (`No appenders could be found for logger`,
+`Please initialize the logging system properly`, and the log4j FAQ notice). These were captured as
+kernel startup warnings and were separate from model diagnostics.
 
 The stable `0.61.0` release JAR is not byte-identical to the local `0.61.0-SNAPSHOT` JAR: their
 SHA-256 values differ. Passing the local check therefore does not predict the result of the fixed
