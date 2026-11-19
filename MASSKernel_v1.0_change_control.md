@@ -394,3 +394,45 @@ This establishes MASS-SK-1.0 as the semantic foundation for:
 **Stage 2 — MASS Domain Library**
 
 and subsequent MASS Digital Engineering Framework stages.
+
+---
+
+# 14. Supplemental Record — Source Cleanup and Checksum Reconciliation
+
+The Git diff in commit `f5869a832b891baf3c3583308c7aff58fb6e03e2` confirms that the cleanup removed
+copied interface text (`Skip to main panel`), adjacent blank lines, and a stray `/` from the start of
+both `MASSKernel_v1.0.sysml` and `MASSKernel_v1.0_candidate.sysml`. No model definitions or semantic
+relationships were changed in that diff. The checksum file was updated in that commit.
+
+The current SHA-256 of `MASSKernel_v1.0.sysml` is:
+
+`55d9100b977502286630a832a6fd6da5598ff732cec30ffe8d6d6e693db0d9a2`
+
+It matches the entry in `MASSKernel_v1.0.sha256`. The former manifest checksum,
+`1701bbb86e24588660ef717f2ff7f276b63c938d8569d4511dc19c42033aa788`, is retained there as the
+historical checksum of the source artifact before cleanup.
+
+During this reconciliation on 2026-11-19, OpenSysML **v0.12.1** (commit
+`b2f0e9b802a334369da94312c35cefbd8726d3bf`) analyzed both files successfully with no errors:
+
+```sh
+sysml -validate MASSKernel_v1.0.sysml
+```
+
+```sh
+sysml -validate MASSKernel_v1.0_candidate.sysml
+```
+
+Both analyses emitted the known `action-step-multiplicity-not-fixed` warning for
+`operationalFunctions[1..*]`. The baseline warning is at line 386 and the candidate warning at line
+384. No multiplicity or model semantics were changed to suppress it.
+
+SK1–SK16 and CQ1–CQ12 regressions and verification with the SysML v2 Pilot were not rerun as part of
+this checksum reconciliation. The earlier validation results remain historical evidence and are
+not represented as new results.
+
+**Unresolved artifact-version decision:** Section 5 requires the released source to remain immutable,
+and Section 7 notes that replacing the released source artifact may require a new semantic baseline
+version. The cleanup did not change model definitions, and this reconciliation does not change the
+kernel version or decide whether the corrected source requires a separately versioned artifact or
+release designation. The project owner must resolve that question.
